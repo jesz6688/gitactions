@@ -1,0 +1,35 @@
+name: .NET
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.x
+    - name: Restore dependencies
+      run: dotnet restore
+    - name: Build
+      run: dotnet build --no-restore
+    - name: Test
+      run: dotnet test --no-build --verbosity normal
+    - name: Deploy to EB
+      uses: einaregilsson/beanstalk-deploy@v18
+      with:
+        aws_access_key: ${AKIATDTCU53HRBGDCXNU}
+        aws_secret_key: ${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}
+        application_name: azuredevops
+        environment_name: Azuredevops-env
+        version_label: 12345
+        region: us-west-2
+        deployment_package: awsproject.zip
